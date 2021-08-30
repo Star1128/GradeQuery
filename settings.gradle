@@ -1,0 +1,2 @@
+rootProject.name = "GradeQuery"
+include ':app'
