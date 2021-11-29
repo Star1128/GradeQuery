@@ -4,6 +4,7 @@
     <string name="studentId">学号</string>
     <string name="query">查询</string>
     <string name="top1">东华理工大学</string>
-    <string name="top2">团员党团知识考试成绩查询系统</string>
+    <string name="top2">团员党团知识考试成绩查询</string>
+    <string name="top3">团员党团知识考试成绩单</string>
     <string name="center_image">团支部徽章</string>
 </resources>

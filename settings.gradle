@@ -1,2 +1,3 @@
 rootProject.name = "GradeQuery"
 include ':app'
+include ':EthanUtils'

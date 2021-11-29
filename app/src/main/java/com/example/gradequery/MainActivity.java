@@ -1,12 +1,17 @@
 package com.example.gradequery;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.*;
-import android.widget.*;
+import android.text.TextUtils;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+
+import com.ethan.ethanutils.KeyboardUtil;
+import com.example.gradequery.databinding.ActivityMainBinding;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,52 +25,52 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityMainBinding binding= DataBindingUtil.setContentView(this,R.layout.activity_main);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
-        setContentView(R.layout.activity_main);
-
-        Button button = findViewById(R.id.button);
-        EditText userName = findViewById(R.id.editTextPersonName);
-        EditText studentId = findViewById(R.id.editTextStudentId);
         List<User> students = getUserFromSheet();
 
-        button.setOnClickListener((View v) -> {
-            String userName_s = userName.getText().toString();
-            String studentId_s = studentId.getText().toString();
-            if (userName_s.equals("") || studentId_s.equals("")) {
+        binding.button.setOnClickListener((View v) -> {
+            String userName = binding.editTextPersonName.getText().toString();
+            String studentId = binding.editTextStudentId.getText().toString();
+            if (TextUtils.isEmpty(userName)||TextUtils.isEmpty(studentId)) {
                 Toast.makeText(this, "请输入完整信息", Toast.LENGTH_SHORT).show();
             } else {
-                search(students, userName_s, studentId_s);
+                search(students, userName, studentId);
             }
+        });
+
+        // TODO: 2021/11/30
+        binding.home.setOnTouchListener((View v, MotionEvent event) -> {
+            binding.home.setFocusable(true);
+            binding.home.setFocusableInTouchMode(true);//使用触摸可以重获焦点
+            binding.home.requestFocus();
+            KeyboardUtil.closeKeyboard(this);
+            return false;
         });
     }
 
     /**
      * 从excel中读取数据
-     *
-     * @return 用户信息库
+     * @return 用户信息集合
      */
     public List<User> getUserFromSheet() {
         List<User> users = new ArrayList<>();
-        int i = 1;
         Cell U_CLASS, U_NAME, U_ID, U_GRADE, U_REMARKS;
         try {
-            Workbook book = Workbook.getWorkbook(getAssets().open("总表.xls"));//此处
+            Workbook book = Workbook.getWorkbook(getAssets().open("总表.xls"));//此处每次需修改
 
-            Sheet sheet = book.getSheet(0);
-            while (i < sheet.getRows()) {
+            Sheet sheet = book.getSheet(0);//拿到第1个sheet表
+            for (int i=1;i < sheet.getRows();i++) {//从第2行开始,因为第1行是列名
+                //读取每行信息,i是列,i1是行
                 U_CLASS = sheet.getCell(0, i);
                 U_NAME = sheet.getCell(1, i);
                 U_ID = sheet.getCell(2, i);
                 U_GRADE = sheet.getCell(3, i);
                 U_REMARKS = sheet.getCell(4, i);
 
-                User user = new User(U_CLASS.getContents(), U_NAME.getContents(),
-                        Long.parseLong(U_ID.getContents()), U_GRADE.getContents(), U_REMARKS.getContents());
+                //学号必须是数字
+                User user = new User(U_CLASS.getContents(), U_NAME.getContents(), Long.parseLong(U_ID.getContents()), U_GRADE.getContents(), U_REMARKS.getContents());
                 users.add(user);
-                i++;
             }
             book.close();
         } catch (IOException | BiffException e) {
@@ -90,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
         }
+
         long l_id = Long.parseLong(s_id);
 
         for (User u : list) {

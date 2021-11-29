@@ -30,6 +30,6 @@ public class User {
     }
 
     public String toString(){
-        return String.format("班级：%s%n姓名：%s%n学号：%s%n成绩：%s%n备注：%s",classId,name,studentId,grade,remarks);
+        return String.format("班级：%s\n姓名：%s\n学号：%s\n成绩：%s\n备注：%s",classId,name,studentId,grade,remarks);
     }
 }
